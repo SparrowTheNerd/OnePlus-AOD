@@ -1,0 +1,2 @@
+rootProject.name='OxygenOS AOD Enabler'
+include ':app'
