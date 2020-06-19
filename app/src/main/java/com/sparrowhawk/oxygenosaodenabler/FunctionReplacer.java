@@ -12,9 +12,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.XC_MethodHook;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
-public class FunctionReplacer implements IXposedHookLoadPackage, IXposedHookInitPackageResources {
+public class FunctionReplacer implements IXposedHookLoadPackage{
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        if (lpparam.packageName.equals("com.oneplus.aod")) {
+        /*if (lpparam.packageName.equals("com.oneplus.aod")) {
 
             XposedBridge.log("AOD HOOKED");
             findAndHookMethod("com.oneplus.aod.Utils", lpparam.classLoader, "isSupportAlwaysOn", new XC_MethodReplacement() {
@@ -64,10 +64,10 @@ public class FunctionReplacer implements IXposedHookLoadPackage, IXposedHookInit
                 }
             });
         }
-
+*/
         if (lpparam.packageName.equals("com.android.systemui")) {
             XposedBridge.log("SYSTEMUI HOOKED");
-
+/*
             findAndHookMethod("com.oneplus.aod.OpAodUtils", lpparam.classLoader, "isSupportAlwaysOn", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
@@ -97,14 +97,13 @@ public class FunctionReplacer implements IXposedHookLoadPackage, IXposedHookInit
                     return true;
                 }
             });
+            */
+            findAndHookMethod("com.android.systemui.statusbar.phone.DozeParameters", lpparam.classLoader, "getPulseVisibleDuration", "int", new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    return Integer.MAX_VALUE;
+                }
+            });
         }
-    }
-
-    public void handleInitPackageResources(final XC_InitPackageResources.InitPackageResourcesParam ipparam) throws Throwable {
-        if (!ipparam.packageName.equals("com.android.systemui")) {
-            return;
-        }
-
-        ipparam.res.setReplacement("com.android.systemui", "integer", "doze_pulse_duration_visible", 6000);
     }
 }
