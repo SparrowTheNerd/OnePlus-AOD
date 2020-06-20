@@ -1,22 +1,20 @@
 package com.sparrowhawk.oxygenosaodenabler;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.XC_MethodHook;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
-public class FunctionReplacer implements IXposedHookLoadPackage{
+public class FunctionReplacer implements IXposedHookLoadPackage, IXposedHookInitPackageResources {
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        /*if (lpparam.packageName.equals("com.oneplus.aod")) {
+        if (lpparam.packageName.equals("com.oneplus.aod")) {
 
             XposedBridge.log("AOD HOOKED");
             findAndHookMethod("com.oneplus.aod.Utils", lpparam.classLoader, "isSupportAlwaysOn", new XC_MethodReplacement() {
@@ -66,10 +64,10 @@ public class FunctionReplacer implements IXposedHookLoadPackage{
                 }
             });
         }
-*/
+
         if (lpparam.packageName.equals("com.android.systemui")) {
             XposedBridge.log("SYSTEMUI HOOKED");
-/*
+
             findAndHookMethod("com.oneplus.aod.OpAodUtils", lpparam.classLoader, "isSupportAlwaysOn", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
@@ -99,28 +97,14 @@ public class FunctionReplacer implements IXposedHookLoadPackage{
                     return true;
                 }
             });
-            */
-            findAndHookMethod("com.android.systemui.statusbar.phone.DozeParameters", lpparam.classLoader, "getPulseVisibleDuration", "int", new XC_MethodReplacement() {
-                @Override
-                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    return Integer.MAX_VALUE;
-                }
-            });
-
-            findAndHookMethod("com.oneplus.aod.OpAodThreeKeyStatusView", lpparam.classLoader, "onThreeKeyChanged", "int", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //run reset of AOD screen after 3 sec
-                            Class<?> aodDisplayManager = XposedHelpers.findClass("com.oneplus.aod.OpAodDisplayViewManager", lpparam.classLoader);
-                            XposedHelpers.callMethod(aodDisplayManager, "onScreenTurnedOff");
-                        }
-                    }, 3000);
-                }
-            });
         }
+    }
+
+    public void handleInitPackageResources(final XC_InitPackageResources.InitPackageResourcesParam ipparam) throws Throwable {
+        if (!ipparam.packageName.equals("com.android.systemui")) {
+            return;
+        }
+
+        ipparam.res.setReplacement("com.android.systemui", "integer", "doze_pulse_duration_visible", 6000);
     }
 }
