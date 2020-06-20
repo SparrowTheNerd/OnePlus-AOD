@@ -1,6 +1,4 @@
 # OnePlus-AOD
 WIP: AOD enabler for OnePlus Phones
 
-Currently only works with RenovateICE ROM installed
-
-Only tested on OnePlus 7 Pro
+Tested and working on OnePlus 7 Pro 10.3.3.GM21AA
