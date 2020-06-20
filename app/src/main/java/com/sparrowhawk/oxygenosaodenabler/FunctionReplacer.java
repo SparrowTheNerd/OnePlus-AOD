@@ -1,12 +1,14 @@
 package com.sparrowhawk.oxygenosaodenabler;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.XC_MethodHook;
@@ -102,6 +104,21 @@ public class FunctionReplacer implements IXposedHookLoadPackage{
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     return Integer.MAX_VALUE;
+                }
+            });
+
+            findAndHookMethod("com.oneplus.aod.OpAodThreeKeyStatusView", lpparam.classLoader, "onThreeKeyChanged", "int", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //run reset of AOD screen after 3 sec
+                            Class<?> aodDisplayManager = XposedHelpers.findClass("com.oneplus.aod.OpAodDisplayViewManager", lpparam.classLoader);
+                            XposedHelpers.callMethod(aodDisplayManager, "onScreenTurnedOff");
+                        }
+                    }, 3000);
                 }
             });
         }
