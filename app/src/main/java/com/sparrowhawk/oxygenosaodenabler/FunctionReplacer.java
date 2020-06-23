@@ -32,28 +32,28 @@ public class FunctionReplacer implements IXposedHookLoadPackage{
             findAndHookMethod("com.oneplus.aod.OpAodDisplayViewManager", lpparam.classLoader, "getStateString", int.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    if (param.getResult() == "notification") {
+                    if (param.getResult() == "notification") {      //if a notification is visible on-screen
 
                         final Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                XposedHelpers.callMethod(param.thisObject, "updateForPulseReason", 3);
+                                XposedHelpers.callMethod(param.thisObject, "updateForPulseReason", 3);  //update the display so notification disappears and clock reappears
                             }
-                        }, notifViewSec*1000);
+                        }, notifViewSec*1000);  //delay 10000ms
 
                         XposedHelpers.callMethod(clock, "updateClockDB");
                     }
 
-                    else if (param.getResult() == "threekey") {
+                    else if (param.getResult() == "threekey") {     //if a threekey icon is visible on-screen
 
                         final Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                XposedHelpers.callMethod(param.thisObject, "updateForPulseReason", 3);
+                                XposedHelpers.callMethod(param.thisObject, "updateForPulseReason", 3);  //update the display so threekey disappears and clock reappears
                             }
-                        }, threeKeyViewSec*1000);
+                        }, threeKeyViewSec*1000);   //delay 3000ms
                     }
                 }
             });
