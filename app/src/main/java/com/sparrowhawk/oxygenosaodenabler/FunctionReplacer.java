@@ -41,8 +41,6 @@ public class FunctionReplacer implements IXposedHookLoadPackage{
                                 XposedHelpers.callMethod(param.thisObject, "updateForPulseReason", 3);  //update the display so notification disappears and clock reappears
                             }
                         }, notifViewSec*1000);  //delay 10000ms
-
-                        XposedHelpers.callMethod(clock, "updateClockDB");
                     }
 
                     else if (param.getResult() == "threekey") {     //if a threekey icon is visible on-screen
